@@ -1,0 +1,224 @@
+// NavBar.scss
+.navbar {
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 1rem 0;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d3748;
+      text-decoration: none;
+      background: linear-gradient(to right, #4299e1, #38b2ac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .nav-links {
+    transition: all 0.3s ease;
+
+    ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin: 0 1rem;
+
+        a {
+          color: #4a5568;
+          text-decoration: none;
+          font-weight: 500;
+          padding: 0.5rem 0;
+          position: relative;
+          transition: all 0.3s ease;
+
+          &:hover {
+            color: #4299e1;
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #4299e1;
+            transition: width 0.3s ease;
+          }
+
+          &:hover::after {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    button,
+    a {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4a5568;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      position: relative;
+
+      &:hover {
+        color: #4299e1;
+        transform: translateY(-2px);
+      }
+    }
+
+    .cart-icon {
+      position: relative;
+
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #4299e1;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        font-weight: bold;
+      }
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 1.5rem;
+    }
+  }
+
+  .search-bar {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+
+    &.active {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px 0 0 4px;
+      outline: none;
+      font-size: 1rem;
+
+      &:focus {
+        border-color: #4299e1;
+      }
+    }
+
+    .search-button {
+      padding: 0 1.5rem;
+      background: #4299e1;
+      color: white;
+      border: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #3182ce;
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 992px) {
+  .navbar {
+    .nav-links {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 80%;
+      max-width: 300px;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      z-index: 1001;
+
+      &.active {
+        left: 0;
+      }
+
+      ul {
+        flex-direction: column;
+
+        li {
+          margin: 1rem 0;
+
+          a {
+            padding: 0.5rem 0;
+            display: block;
+          }
+        }
+      }
+    }
+
+    .hamburger {
+      display: block !important;
+      z-index: 1002;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar {
+    padding: 0.75rem 0;
+
+    .logo a {
+      font-size: 1.25rem;
+    }
+
+    .nav-icons {
+      gap: 1rem;
+    }
+  }
+}
