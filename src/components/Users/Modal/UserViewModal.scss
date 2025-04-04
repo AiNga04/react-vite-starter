@@ -1,0 +1,130 @@
+.user-view-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    background: #ffffff;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-title {
+    color: #1f2937;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: #2f54eb;
+      margin-right: 12px;
+      border-radius: 2px;
+    }
+  }
+
+  .ant-modal-close {
+    color: #6b7280;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+      color: #1f2937;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 32px;
+  }
+
+  .user-details-container {
+    .user-descriptions {
+      .ant-descriptions-item {
+        padding-bottom: 12px;
+      }
+
+      .ant-descriptions-item-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #4a4a4a;
+        background: #f8fafc;
+        border-right: 1px solid #e5e7eb;
+        padding: 10px 14px;
+      }
+
+      .ant-descriptions-item-content {
+        padding: 10px 14px;
+        background: #ffffff;
+      }
+
+      .description-value {
+        color: #1f2937;
+        font-size: 14px;
+      }
+
+      .custom-tag {
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        border: none;
+        line-height: 1;
+      }
+    }
+
+    .no-data {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      padding: 24px;
+      background: #f8fafc;
+      border-radius: 10px;
+      margin: 16px 0;
+    }
+  }
+
+  .view-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+
+    .close-btn {
+      border-radius: 10px;
+      padding: 0 24px;
+      height: 44px;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-weight: 500;
+      background: #ffffff;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #009ffd;
+        color: #009ffd;
+        background: #f0faff;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 90% !important;
+    max-width: 100%;
+
+    .user-details-container {
+      .user-descriptions {
+        .ant-descriptions-view {
+          overflow-x: auto;
+        }
+      }
+    }
+  }
+}

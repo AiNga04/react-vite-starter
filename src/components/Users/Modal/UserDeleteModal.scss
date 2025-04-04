@@ -1,0 +1,130 @@
+.user-delete-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    background: #ffffff;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-title {
+    color: #1f2937;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: #f5222d;
+      margin-right: 12px;
+      border-radius: 2px;
+    }
+  }
+
+  .ant-modal-close {
+    color: #6b7280;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+      color: #1f2937;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 24px 32px;
+  }
+
+  .modal-content {
+    border: none;
+    .confirmation-text {
+      font-size: 16px;
+      color: #4a4a4a;
+      text-align: center;
+      margin-bottom: 0;
+
+      .user-email {
+        color: #1f2937;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+
+    .cancel-btn {
+      border-radius: 10px;
+      padding: 0 24px;
+      height: 44px;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-weight: 500;
+      background: #ffffff;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #009ffd;
+        color: #009ffd;
+        background: #f0faff;
+      }
+    }
+
+    .delete-btn {
+      border-radius: 10px;
+      padding: 0 24px;
+      height: 44px;
+      background: linear-gradient(135deg, #dc2626 0%, #f87171 100%);
+      border: none;
+      font-weight: 500;
+      color: #ffffff;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+
+      &[disabled] {
+        background: #d1d5db;
+        color: #9ca3af;
+        box-shadow: none;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    width: 90% !important;
+    max-width: 100%;
+
+    .modal-actions {
+      flex-direction: column;
+      gap: 10px;
+
+      .cancel-btn,
+      .delete-btn {
+        width: 100%;
+      }
+    }
+  }
+}

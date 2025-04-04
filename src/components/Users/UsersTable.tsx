@@ -1,11 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useImperativeHandle, forwardRef, useState } from "react";
+import { Button, Space, Table, TableColumnType, Input } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table, TableColumnType } from "antd";
-import type { InputRef } from "antd";
-import Highlighter from "react-highlight-words";
 import "./UsersTable.scss";
 
-interface DataType {
+export interface IUser {
   address: string;
   age: number;
   createdAt: string;
@@ -19,83 +18,28 @@ interface DataType {
   _id: string;
 }
 
-interface ApiResponse {
-  statusCode: number;
-  data: {
-    result: DataType[];
-  };
+interface UsersTableProps {
+  users: IUser[];
+  loading: boolean;
+  onViewUser: (user: IUser) => void;
+  onEditUser: (user: IUser) => void;
+  onDeleteUser: (user: IUser) => void;
 }
 
-type DataIndex = keyof DataType;
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear()).slice(-2);
-  return `${day}/${month}/${year}`;
-};
-
-const UsersTable: React.FC = () => {
+const UsersTable = forwardRef((props: UsersTableProps, ref) => {
+  const { users, loading, onViewUser, onEditUser, onDeleteUser } = props;
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
-  const [data, setData] = useState<DataType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0b2tlbiBsb2dpbiIsImlzcyI6ImZyb20gc2VydmVyIiwiX2lkIjoiNjdlN2Q3MGJjM2FlYmMxZWE0MWFjNTZmIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJhZGRyZXNzIjoiVmlldE5hbSIsImlzVmVyaWZ5Ijp0cnVlLCJuYW1lIjoiSSdtIGFkbWluIiwidHlwZSI6IlNZU1RFTSIsInJvbGUiOiJBRE1JTiIsImdlbmRlciI6Ik1BTEUiLCJhZ2UiOjY5LCJpYXQiOjE3NDM2NDM4ODUsImV4cCI6MTgzMDA0Mzg4NX0.J4IBtELNltTPI-cvjmQBUzTkUVAnqYZEc1x4mWZOM2g";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getData();
-      } catch (err) {
-        console.error("Failed to fetch data:", err);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const getData = async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    const url = "http://localhost:8000/api/v1/users/all";
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-            errorData.message || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const json: ApiResponse = await response.json();
-      if (json.statusCode === 200) {
-        setData(json.data.result);
-      }
-    } catch (err) {
-      const message =
-          err instanceof Error ? err.message : "Unknown error occurred";
-      setError(message);
-      console.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useImperativeHandle(ref, () => ({
+    resetPagination: () => setCurrentPage(1),
+  }));
 
   const handleSearch = (
-      selectedKeys: string[],
-      confirm: () => void,
-      dataIndex: DataIndex
+    selectedKeys: string[],
+    confirm: () => void,
+    dataIndex: string
   ) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -108,199 +52,158 @@ const UsersTable: React.FC = () => {
   };
 
   const getColumnSearchProps = (
-      dataIndex: DataIndex
-  ): TableColumnType<DataType> => ({
+    dataIndex: keyof IUser
+  ): ColumnsType<IUser>[number] => ({
     filterDropdown: ({
-                       setSelectedKeys,
-                       selectedKeys,
-                       confirm,
-                       clearFilters,
-                       close,
-                     }) => (
-        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-          <Input
-              ref={searchInput}
-              placeholder={`Search ${dataIndex}`}
-              value={selectedKeys[0]}
-              onChange={(e) =>
-                  setSelectedKeys(e.target.value ? [e.target.value] : [])
-              }
-              onPressEnter={() =>
-                  handleSearch(selectedKeys as string[], confirm, dataIndex)
-              }
-              style={{ marginBottom: 8, display: "block" }}
-          />
-          <Space>
-            <Button
-                type="primary"
-                onClick={() =>
-                    handleSearch(selectedKeys as string[], confirm, dataIndex)
-                }
-                icon={<SearchOutlined />}
-                size="small"
-                style={{ width: 90 }}
-            >
-              Search
-            </Button>
-            <Button
-                onClick={() => clearFilters && handleReset(clearFilters)}
-                size="small"
-                style={{ width: 90 }}
-            >
-              Reset
-            </Button>
-            <Button
-                type="link"
-                size="small"
-                onClick={() => {
-                  confirm({ closeDropdown: false });
-                  setSearchText((selectedKeys as string[])[0]);
-                  setSearchedColumn(dataIndex);
-                }}
-            >
-              Filter
-            </Button>
-            <Button type="link" size="small" onClick={close}>
-              close
-            </Button>
-          </Space>
-        </div>
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() =>
+            handleSearch(selectedKeys as string[], confirm, dataIndex)
+          }
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() =>
+              handleSearch(selectedKeys as string[], confirm, dataIndex)
+            }
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => handleReset(clearFilters!)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
     ),
     filterIcon: (filtered: boolean) => (
-        <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+      <SearchOutlined
+        value={searchText}
+        style={{ color: filtered ? "#1890ff" : undefined }}
+      />
     ),
-    filterDropdownProps: {
-      onOpenChange: (open) => {
-        if (open) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
-    },
     onFilter: (value, record) =>
-        record[dataIndex]
+      record[dataIndex]
+        ? record[dataIndex]
             .toString()
             .toLowerCase()
-            .includes((value as string).toLowerCase()),
-    render: (text) =>
-        searchedColumn === dataIndex ? (
-            <Highlighter
-                highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-                searchWords={[searchText]}
-                autoEscape
-                textToHighlight={text ? text.toString() : ""}
-            />
-        ) : (
-            text
-        ),
+            .includes((value as string).toLowerCase())
+        : false,
+    render: (text: string) =>
+      searchedColumn === dataIndex ? (
+        <span style={{ backgroundColor: "#ffc069", padding: 0 }}>{text}</span>
+      ) : (
+        text
+      ),
   });
 
-  const columns: TableColumnType<DataType>[] = [
+  const columns: TableColumnType<IUser>[] = [
+    {
+      title: "No",
+      dataIndex: "no",
+      key: "no",
+      width: "5%",
+      render: (_: any, __: IUser, index: number) =>
+        (currentPage - 1) * 10 + index + 1,
+    },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      width: "15%",
+      sorter: (a, b) => a.name.localeCompare(b.name),
       ...getColumnSearchProps("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      width: "20%",
       ...getColumnSearchProps("email"),
-    },
-    {
-      title: "Gender",
-      dataIndex: "gender",
-      key: "gender",
-      filters: [
-        { text: "MALE", value: "MALE" },
-        { text: "FEMALE", value: "FEMALE" },
-      ],
-      onFilter: (value, record) => record.gender === value,
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      filters: [
-        { text: "Under 30", value: "under30" },
-        { text: "30-50", value: "30-50" },
-        { text: "Over 50", value: "over50" },
-      ],
-      onFilter: (value, record) => {
-        if (value === "under30") return record.age < 30;
-        if (value === "30-50") return record.age >= 30 && record.age <= 50;
-        return record.age > 50;
-      },
     },
     {
       title: "Address",
       dataIndex: "address",
       key: "address",
+      width: "30%",
+      sorter: (a, b) => a.address.localeCompare(b.address),
       ...getColumnSearchProps("address"),
     },
     {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      width: "10%",
       filters: [
-        { text: "ADMIN", value: "ADMIN" },
-        { text: "USER", value: "USER" },
+        { text: "Admin", value: "ADMIN" },
+        { text: "User", value: "USER" },
       ],
       onFilter: (value, record) => record.role === value,
     },
     {
-      title: "Verify",
-      dataIndex: "isVerify",
-      key: "isVerify",
-      filters: [
-        { text: "Verified", value: true },
-        { text: "Not Verified", value: false },
-      ],
-      onFilter: (value, record) => record.isVerify === value,
-      render: (text: boolean) => (text ? "Yes" : "No"),
-    },
-    {
-      title: "CreatedAt",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (text: string) => formatDate(text),
-      sorter: (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      sortDirections: ["descend", "ascend"],
-    },
-    {
-      title: "UpdatedAt",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      render: (text: string) => formatDate(text),
-      sorter: (a, b) =>
-          new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-      sortDirections: ["descend", "ascend"],
-    },
-    {
-      title: "Id",
-      dataIndex: "_id",
-      key: "_id",
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            color="geekblue"
+            variant="solid"
+            onClick={() => onViewUser(record)}
+          >
+            View
+          </Button>
+          <Button
+            color="cyan"
+            variant="solid"
+            onClick={() => onEditUser(record)}
+          >
+            Edit
+          </Button>
+          <Button
+            color="danger"
+            variant="solid"
+            onClick={() => onDeleteUser(record)}
+          >
+            Delete
+          </Button>
+        </Space>
+      ),
+      width: "20%",
     },
   ];
 
   return (
-      <div className="table-wrapper container">
-        {error && (
-            <div className="error-message" style={{ color: "red", marginBottom: 16 }}>
-              {error}
-            </div>
-        )}
-        <Table<DataType>
-            className="users-table"
-            columns={columns}
-            dataSource={data}
-            rowKey="_id"
-            scroll={{ x: "max-content" }}
-            loading={loading}
-        />
-      </div>
+    <Table<IUser>
+      className="users-table"
+      columns={columns}
+      dataSource={users}
+      rowKey="_id"
+      loading={loading}
+      pagination={{
+        current: currentPage,
+        onChange: (page) => setCurrentPage(page),
+      }}
+      scroll={{ x: "max-content" }}
+    />
   );
-};
+});
 
 export default UsersTable;

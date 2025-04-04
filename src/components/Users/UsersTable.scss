@@ -1,10 +1,9 @@
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
-  padding: 16px;
 
   .users-table {
-    min-width: 1000px; //
+    min-width: 1000px;
 
     .ant-table {
       font-size: 14px;

@@ -1,137 +1,141 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import UsersTable from "../components/Users/UsersTable";
+import UserCreateModal from "../components/Users/Modal/UserCreateModal";
+import UserViewModal from "../components/Users/Modal/UserViewModal";
+import UserUpdateModal from "../components/Users/Modal/UserUpdateModal";
+import UserDeleteModal from "../components/Users/Modal/UserDeleteModal";
 import "./UsersPage.scss";
-import { Button, Modal, Input, Select } from "antd";
+import { Button } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 
 const UserPage: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0b2tlbiBsb2dpbiIsImlzcyI6ImZyb20gc2VydmVyIiwiX2lkIjoiNjdlN2Q3MGJjM2FlYmMxZWE0MWFjNTZmIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJhZGRyZXNzIjoiVmlldE5hbSIsImlzVmVyaWZ5Ijp0cnVlLCJuYW1lIjoiSSdtIGFkbWluIiwidHlwZSI6IlNZU1RFTSIsInJvbGUiOiJBRE1JTiIsImdlbmRlciI6Ik1BTEUiLCJhZ2UiOjY5LCJpYXQiOjE3NDM2NDg3NzMsImV4cCI6MTgzMDA0ODc3M30.JzAYoNydApDphcWOllAEYeTYy1aTXhMSl9Anulv8mh4";
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [address, setAddress] = useState("");
-  const [role, setRole] = useState("");
+  const tableRef = useRef<{ resetPagination: () => void }>(null);
 
-  const showModal = () => setIsModalOpen(true);
-  const handleCancel = () => setIsModalOpen(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const url = "http://localhost:8000/api/v1/auth/register";
+  const fetchUsers = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(url, {
-        method: "POST",
+      const response = await fetch("http://localhost:8000/api/v1/users/all", {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
-          age: age,
-          gender: gender,
-          address: address,
-          role: role,
-        }),
       });
       if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
+        throw new Error("Failed to fetch users");
       }
-
-      const json = await response.json();
-      console.log(json);
-
-      setIsModalOpen(false);
-    } catch (error: any) {
-      console.error("Error:", error.message);
+      const data = await response.json();
+      setUsers(data.data.result);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleCreateSuccess = () => {
+    fetchUsers();
+    setIsCreateModalOpen(false);
+    if (tableRef.current) {
+      tableRef.current.resetPagination();
+    }
+  };
+
+  const handleUpdateSuccess = () => {
+    fetchUsers();
+    setIsUpdateModalOpen(false);
+  };
+
+  const handleDeleteSuccess = () => {
+    fetchUsers();
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleViewUser = (user: any) => {
+    setSelectedUser(user);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditUser = (user: any) => {
+    setSelectedUser(user);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleDeleteUser = (user: any) => {
+    setSelectedUser(user);
+    setIsDeleteModalOpen(true);
+  };
+
   return (
-    <div className="users-page">
+    <div className="users-page container">
       <div className="header container">
         <h1 className="title">List User</h1>
         <Button
           icon={<UserAddOutlined />}
           type="primary"
-          onClick={showModal}
+          onClick={() => setIsCreateModalOpen(true)}
           className="add-user-btn"
         >
           Add new user
         </Button>
-
-        <Modal
-          title="Add New User"
-          centered
-          open={isModalOpen}
-          onCancel={handleCancel}
-          className="responsive-modal"
-          footer={null}
-        >
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>Name:</label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div>
-              <label>Email:</label>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div>
-              <label>Password:</label>
-              <Input.Password
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Age:</label>
-              <Input value={age} onChange={(e) => setAge(e.target.value)} />
-            </div>
-            <div>
-              <label>Gender:</label>
-              <Select
-                defaultValue="MALE"
-                style={{ width: "100%" }}
-                onChange={(value) => setGender(value)}
-                options={[
-                  { value: "MALE", label: "MALE" },
-                  { value: "FEMALE", label: "FEMALE" },
-                  { value: "OTHER", label: "OTHER" },
-                ]}
-              />
-            </div>
-            <div>
-              <label>Role:</label>
-              <Select
-                defaultValue="USER"
-                style={{ width: "100%" }}
-                onChange={(value) => setRole(value)}
-                options={[
-                  { value: "USER", label: "USER" },
-                  { value: "ADMIN", label: "ADMIN" },
-                ]}
-              />
-            </div>
-            <div>
-              <label>Address:</label>
-              <Input
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
-            <div className="btn-submit mt-2">
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </div>
-          </form>
-        </Modal>
       </div>
-      <UsersTable />
+
+      {/* Users Table */}
+      <UsersTable
+        ref={tableRef}
+        users={users}
+        loading={loading}
+        onViewUser={handleViewUser}
+        onEditUser={handleEditUser}
+        onDeleteUser={handleDeleteUser}
+      />
+
+      {/* Create User Modal */}
+      <UserCreateModal
+        token={token}
+        isModalOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
+
+      {/* Update User Modal */}
+      <UserUpdateModal
+        token={token}
+        isModalOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        onSuccess={handleUpdateSuccess}
+        userData={selectedUser}
+      />
+
+      {/* Delete User Modal */}
+      <UserDeleteModal
+        token={token}
+        isModalOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onSuccess={handleDeleteSuccess}
+        userData={selectedUser}
+      />
+
+      {/* View User Modal */}
+      <UserViewModal
+        isModalOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        userData={selectedUser}
+      />
     </div>
   );
 };
