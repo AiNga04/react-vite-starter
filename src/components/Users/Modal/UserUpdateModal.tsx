@@ -35,20 +35,18 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
     }
   }, [userData, form]);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (
+    values: Record<string, string | number | undefined>
+  ) => {
     setIsSubmitting(true);
     try {
       if (!userData || !userData._id) {
-        toast.error("Invalid user data");
+        toast.error("Invalid user data: User ID is missing");
         return;
       }
 
-      // Filter out unchanged fields and fields that are empty or undefined
-      const payload = Object.keys(values).reduce((acc, key) => {
-        // Skip confirmPassword as it's not needed in the API payload
+      const changedFields = Object.keys(values).reduce((acc, key) => {
         if (key === "confirmPassword") return acc;
-
-        // Only include fields that have changed or are new (e.g., password)
         if (
           values[key] !== undefined &&
           values[key] !== null &&
@@ -58,16 +56,22 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
           acc[key] = values[key];
         }
         return acc;
-      }, {} as Record<string, any>);
+      }, {} as Record<string, string | number | undefined>);
 
-      // If no fields have changed, show a message and return
-      if (Object.keys(payload).length === 0) {
+      if (Object.keys(changedFields).length === 0) {
         toast.info("No changes to update");
         onClose();
         return;
       }
 
-      const url = `http://localhost:8000/api/v1/users/${userData._id}`;
+      const payload = {
+        _id: userData._id,
+        ...changedFields,
+      };
+
+      console.log(payload);
+
+      const url = `http://localhost:8000/api/v1/users`;
       const response = await fetch(url, {
         method: "PATCH",
         headers: {
@@ -77,15 +81,14 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update user");
-      }
-
       const data = await response.json();
-      toast.success(data.message || "User updated successfully!");
-      onSuccess();
-      onClose();
+      if (data.statusCode !== 200) {
+        throw new Error(data.message || "Failed to update user");
+      } else {
+        toast.success(data.message || "User updated successfully!");
+        onSuccess();
+        onClose();
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message || "Failed to update user");

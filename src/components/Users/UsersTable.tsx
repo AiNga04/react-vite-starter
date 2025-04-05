@@ -7,14 +7,14 @@ import "./UsersTable.scss";
 export interface IUser {
   address: string;
   age: number;
-  createdAt: string;
+  createdAt?: string;
   email: string;
   gender: string;
   isVerify: boolean;
   name: string;
   role: string;
   type: string;
-  updatedAt: string;
+  updatedAt?: string;
   _id: string;
 }
 
@@ -121,7 +121,7 @@ const UsersTable = forwardRef((props: UsersTableProps, ref) => {
       dataIndex: "no",
       key: "no",
       width: "5%",
-      render: (_: any, __: IUser, index: number) =>
+      render: (_: unknown, __: IUser, index: number) =>
         (currentPage - 1) * 10 + index + 1,
     },
     {

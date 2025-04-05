@@ -1,23 +1,12 @@
 import React from "react";
 import { Button, Modal, Descriptions, Tag } from "antd";
 import "./UserViewModal.scss";
-
-interface UserData {
-  _id: string;
-  name: string;
-  email: string;
-  age: number;
-  gender: string;
-  role: string;
-  address: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { IUser } from "../UsersTable";
 
 interface UserViewModalProps {
   isModalOpen: boolean;
   onClose: () => void;
-  userData: UserData | null;
+  userData: IUser | null;
 }
 
 const UserViewModal: React.FC<UserViewModalProps> = ({
@@ -28,16 +17,16 @@ const UserViewModal: React.FC<UserViewModalProps> = ({
   const getGenderColor = (gender: string) => {
     switch (gender) {
       case "MALE":
-        return "#60a5fa"; // Softer blue
+        return "#60a5fa";
       case "FEMALE":
-        return "#f472b6"; // Softer pink
+        return "#f472b6";
       default:
-        return "#9ca3af"; // Neutral gray
+        return "#9ca3af";
     }
   };
 
   const getRoleColor = (role: string) => {
-    return role === "ADMIN" ? "#f87171" : "#34d399"; // Softer red and green
+    return role === "ADMIN" ? "#f87171" : "#34d399";
   };
 
   return (

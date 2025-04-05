@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Modal, Button } from "antd";
 import { toast } from "react-toastify";
 import "./UserDeleteModal.scss";
+import {IUser} from "../UsersTable.tsx";
 
 interface UserDeleteModalProps {
   token: string;
   isModalOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  userData: any;
+  userData: null | IUser;
 }
 
 const UserDeleteModal: React.FC<UserDeleteModalProps> = ({

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import UsersTable from "../components/Users/UsersTable";
+import UsersTable, {IUser} from "../components/Users/UsersTable";
 import UserCreateModal from "../components/Users/Modal/UserCreateModal";
 import UserViewModal from "../components/Users/Modal/UserViewModal";
 import UserUpdateModal from "../components/Users/Modal/UserUpdateModal";
@@ -14,7 +14,7 @@ const UserPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<null | IUser>(null);
   const [loading, setLoading] = useState(false);
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0b2tlbiBsb2dpbiIsImlzcyI6ImZyb20gc2VydmVyIiwiX2lkIjoiNjdlN2Q3MGJjM2FlYmMxZWE0MWFjNTZmIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJhZGRyZXNzIjoiVmlldE5hbSIsImlzVmVyaWZ5Ijp0cnVlLCJuYW1lIjoiSSdtIGFkbWluIiwidHlwZSI6IlNZU1RFTSIsInJvbGUiOiJBRE1JTiIsImdlbmRlciI6Ik1BTEUiLCJhZ2UiOjY5LCJpYXQiOjE3NDM2NDg3NzMsImV4cCI6MTgzMDA0ODc3M30.JzAYoNydApDphcWOllAEYeTYy1aTXhMSl9Anulv8mh4";
@@ -65,17 +65,17 @@ const UserPage: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleViewUser = (user: any) => {
+  const handleViewUser = (user: IUser) => {
     setSelectedUser(user);
     setIsViewModalOpen(true);
   };
 
-  const handleEditUser = (user: any) => {
+  const handleEditUser = (user: IUser) => {
     setSelectedUser(user);
     setIsUpdateModalOpen(true);
   };
 
-  const handleDeleteUser = (user: any) => {
+  const handleDeleteUser = (user: IUser) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);
   };
