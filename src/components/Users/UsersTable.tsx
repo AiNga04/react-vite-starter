@@ -7,14 +7,14 @@ import "./UsersTable.scss";
 export interface IUser {
   address: string;
   age: number;
-  createdAt?: string;
+  createdAt?: string; // Đã đúng
   email: string;
   gender: string;
   isVerify: boolean;
   name: string;
   role: string;
   type: string;
-  updatedAt?: string;
+  updatedAt?: string; // Đã đúng
   _id: string;
 }
 

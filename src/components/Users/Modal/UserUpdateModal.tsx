@@ -48,10 +48,11 @@ const UserUpdateModal: React.FC<UserUpdateModalProps> = ({
       const changedFields = Object.keys(values).reduce((acc, key) => {
         if (key === "confirmPassword") return acc;
         if (
+          key in userData && // Kiểm tra key có tồn tại trong userData
           values[key] !== undefined &&
           values[key] !== null &&
           values[key] !== "" &&
-          values[key] !== userData[key]
+          values[key] !== userData[key as keyof IUser] // Sử dụng keyof IUser
         ) {
           acc[key] = values[key];
         }

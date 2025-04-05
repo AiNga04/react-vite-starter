@@ -73,12 +73,16 @@ const UserViewModal: React.FC<UserViewModalProps> = ({
             </Descriptions.Item>
             <Descriptions.Item label="Created At">
               <span className="description-value">
-                {new Date(userData.createdAt).toLocaleString()}
+                {userData.createdAt
+                  ? new Date(userData.createdAt).toLocaleString()
+                  : "N/A"}
               </span>
             </Descriptions.Item>
             <Descriptions.Item label="Last Updated">
               <span className="description-value">
-                {new Date(userData.updatedAt).toLocaleString()}
+                {userData.updatedAt
+                  ? new Date(userData.updatedAt).toLocaleString()
+                  : "N/A"}
               </span>
             </Descriptions.Item>
           </Descriptions>
